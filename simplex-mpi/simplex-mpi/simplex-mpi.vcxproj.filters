@@ -18,12 +18,30 @@
     <ClInclude Include="pch.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="simplex.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="constraint.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="function.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="simplex-mpi.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="simplex.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="constraint.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="function.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
