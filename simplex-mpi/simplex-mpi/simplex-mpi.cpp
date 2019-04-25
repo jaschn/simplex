@@ -12,6 +12,5 @@
 int main()
 {    
 	simplex a;
-	auto x = a.get_pivot_element();
-	std::cout << "Hello World!\n"; 
+	a.solve();
 }

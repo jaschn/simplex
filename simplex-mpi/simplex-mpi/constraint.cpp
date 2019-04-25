@@ -16,3 +16,20 @@ double constraint::get_max_increase(int variable) const
 {
 	return rs/variables.at(variable);
 }
+
+void constraint::exchange(constraint const& pivot_row, int pivot_column)
+{
+	double factor = variables.at(pivot_column);
+	variables.at(pivot_column) = 0;
+	rs -= factor*pivot_row.rs;
+	for (size_t i = 0; i < variables.size(); i++)
+	{
+		if (i == pivot_column)
+			continue;
+		variables.at(i) -= factor*pivot_row.variables.at(i);
+	}
+	for (size_t i = 0; i < slack.size(); i++)
+	{
+		slack.at(i) -= factor * pivot_row.slack.at(i);
+	}
+}

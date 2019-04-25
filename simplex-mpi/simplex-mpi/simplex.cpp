@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "simplex.h"
 #include <algorithm>
+#include <iostream>
 
 simplex::simplex() : objective({6,5},2)
 {
@@ -32,14 +33,16 @@ std::pair<int, int> simplex::get_pivot_element()
 	std::vector<std::pair<int, double>> list;
 	for (size_t i = 0; i < variable_cnt; i++)
 	{
-		list.push_back(get_max_increase_for_variable(i));
+		auto max = get_max_increase_for_variable(i);
+		max.second *= objective.variables.at(i);
+		list.push_back(max);
 	}
 	std::pair<int, int> pivot_element;
 	double max_value;
 	pivot_element.first = 0;
-	pivot_element.second = 0;
+	pivot_element.second = list.at(0).first;;
 	max_value = list.at(0).second;
-	for (size_t i = 0; i < list.size(); i++)
+	for (size_t i = 1; i < list.size(); i++)
 	{
 		if (list.at(i).second > max_value)
 		{
@@ -48,4 +51,47 @@ std::pair<int, int> simplex::get_pivot_element()
 		}
 	}
 	return pivot_element;
+}
+
+void simplex::exchange(std::pair<int,int> pivot)
+{
+	constraint const& pivot_row = constraints.at(pivot.second);
+	objective.exchange(pivot_row, pivot.first);
+	for (size_t i = 0; i < constraints.size(); i++)
+	{
+		if (i == pivot.second)
+			continue;
+		constraints.at(i).exchange(pivot_row, pivot.first);
+	}
+}
+
+void simplex::solve()
+{
+	while (!objective.optimal_solution_reached())
+	{
+		std::pair<int, int> pivot = get_pivot_element();
+		exchange(pivot);
+	}
+	auto res = get_results();
+	for (auto const& x : res)
+	{
+		std::cout << x << " ";
+	}
+	std::cout << std::endl;
+}
+
+std::vector<double> simplex::get_results()
+{
+	std::vector<double> result(variable_cnt);
+	for (auto const& x : constraints)
+	{
+		for (size_t i = 0; i < x.variables.size(); i++)
+		{
+			if (x.variables.at(i) > 0)
+			{
+				result.at(i) = x.rs / x.variables.at(i);
+			}
+		}
+	}
+	return result;
 }
