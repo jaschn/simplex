@@ -2,6 +2,10 @@
 #include "simplex.h"
 #include <algorithm>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <regex>
+#include <set>
 
 simplex::simplex() : objective({6,5},2)
 {
@@ -9,6 +13,7 @@ simplex::simplex() : objective({6,5},2)
 	constraints.push_back(constraint({ 3,2 }, 2, 1, 12));
 	variable_cnt = 2;
 	constraint_cnt = constraints.size();
+
 }
 
 
@@ -77,6 +82,7 @@ void simplex::solve()
 	{
 		std::cout << x << " ";
 	}
+	std::cout << "= " << abs(objective.rs);
 	std::cout << std::endl;
 }
 
@@ -94,4 +100,61 @@ std::vector<double> simplex::get_results()
 		}
 	}
 	return result;
+}
+
+void simplex::parse_file(std::string filename)
+{
+	std::fstream file(filename, std::ios::in);
+	size_t filesize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	std::string data;
+	data.reserve(filesize);
+	std::string tmp;
+	while (std::getline(file,tmp))
+	{
+		if (tmp.length() > 1 && tmp[0] == '/' && tmp[1] == '/')
+			continue;
+		data.append(tmp);
+	}
+	std::regex whitespace("(\\s)*");
+	data = std::regex_replace(data, whitespace, "");
+	std::regex comments("((\/\\*){1}.*?(\\*\/){1})");
+	data = std::regex_replace(data, comments, "");
+
+	std::set<std::string> variables;
+	std::regex var("[a-zA-Z]+[a-zA-Z0-9]*(?!.*:)");
+	std::sregex_iterator it(data.begin(), data.end(),var);
+	std::sregex_iterator end;
+	while (it != end)
+	{
+		std::string tmp = (*it)[0];
+		variables.insert(tmp);
+		it++;
+	}
+
+	std::vector<std::string> con;
+	std::string obj;
+	bool parsing_error = false;
+	size_t pos = 0;
+	std::string eq;
+	while ((pos = data.find(";")) != std::string::npos) {
+		eq = data.substr(0, pos);
+		if (eq.find(":") != std::string::npos)
+		{
+			if (obj.empty())
+			{
+				obj = eq;
+			}
+			else
+			{
+				parsing_error = true;
+			}
+		}
+		else
+		{
+			con.push_back(eq);
+		}		
+		data.erase(0, pos + 1);
+	}
+	int x = 0;
 }

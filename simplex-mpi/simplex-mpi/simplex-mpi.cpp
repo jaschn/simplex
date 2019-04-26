@@ -12,5 +12,6 @@
 int main()
 {    
 	simplex a;
+	a.parse_file("../../example.txt");
 	a.solve();
 }
