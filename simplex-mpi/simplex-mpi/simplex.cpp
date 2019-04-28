@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
-#include <set>
+#include <map>
 
 simplex::simplex() : objective({6,5},2)
 {
@@ -121,22 +121,28 @@ void simplex::parse_file(std::string filename)
 	std::regex comments("((\/\\*){1}.*?(\\*\/){1})");
 	data = std::regex_replace(data, comments, "");
 
-	std::set<std::string> variables;
+	std::map<std::string,int> variables;
 	std::regex var("[a-zA-Z]+[a-zA-Z0-9]*(?!.*:)");
 	std::sregex_iterator it(data.begin(), data.end(),var);
 	std::sregex_iterator end;
 	while (it != end)
 	{
 		std::string tmp = (*it)[0];
-		variables.insert(tmp);
+		variables[tmp] = 0;
 		it++;
 	}
-
+	int cnt = 0;
+	for (auto& x : variables)
+	{
+		x.second = cnt;
+		cnt++;
+	}
 	std::vector<std::string> con;
 	std::string obj;
 	bool parsing_error = false;
 	size_t pos = 0;
 	std::string eq;
+	int slack_cnt = 0;
 	while ((pos = data.find(";")) != std::string::npos) {
 		eq = data.substr(0, pos);
 		if (eq.find(":") != std::string::npos)
@@ -153,6 +159,10 @@ void simplex::parse_file(std::string filename)
 		else
 		{
 			con.push_back(eq);
+			if (eq.find("<") != std::string::npos || eq.find(">") != std::string::npos)
+			{
+				slack_cnt++;
+			}
 		}		
 		data.erase(0, pos + 1);
 	}
