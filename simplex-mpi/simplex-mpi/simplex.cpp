@@ -13,7 +13,6 @@ simplex::simplex() : objective({6,5},2)
 	constraints.push_back(constraint({ 3,2 }, 2, 1, 12));
 	variable_cnt = 2;
 	constraint_cnt = constraints.size();
-
 }
 
 
@@ -39,14 +38,13 @@ std::pair<int, int> simplex::get_pivot_element()
 	for (size_t i = 0; i < variable_cnt; i++)
 	{
 		auto max = get_max_increase_for_variable(i);
-		max.second *= objective.variables.at(i);
+		max.second *= -objective.variables.at(i);
 		list.push_back(max);
 	}
 	std::pair<int, int> pivot_element;
-	double max_value;
 	pivot_element.first = 0;
-	pivot_element.second = list.at(0).first;;
-	max_value = list.at(0).second;
+	pivot_element.second = list.at(0).first;
+	double max_value = list.at(0).second;
 	for (size_t i = 1; i < list.size(); i++)
 	{
 		if (list.at(i).second > max_value)
@@ -104,67 +102,27 @@ std::vector<double> simplex::get_results()
 
 void simplex::parse_file(std::string filename)
 {
+	size_t pos_beg = filename.find_last_of("/KI_");
+	if (pos_beg == std::string::npos)
+	{
+		pos_beg = filename.find_last_of("\\KI_");
+	}
+	size_t pos_end = filename.find_last_of(".txt");
+	int decision_cnt = std::stoi(filename.substr(pos_beg+1,pos_end-pos_beg-4));
+
 	std::fstream file(filename, std::ios::in);
-	size_t filesize = file.tellg();
-	file.seekg(0, std::ios::beg);
-	std::string data;
-	data.reserve(filesize);
 	std::string tmp;
 	while (std::getline(file,tmp))
 	{
-		if (tmp.length() > 1 && tmp[0] == '/' && tmp[1] == '/')
+		if (tmp.find("//") != std::string::npos)
 			continue;
-		data.append(tmp);
-	}
-	std::regex whitespace("(\\s)*");
-	data = std::regex_replace(data, whitespace, "");
-	std::regex comments("((\/\\*){1}.*?(\\*\/){1})");
-	data = std::regex_replace(data, comments, "");
+		if (tmp.length() == 0)
+			continue;
+		if (tmp.find("max:") != std::string::npos || tmp.find("min:") != std::string::npos)
+		{
 
-	std::map<std::string,int> variables;
-	std::regex var("[a-zA-Z]+[a-zA-Z0-9]*(?!.*:)");
-	std::sregex_iterator it(data.begin(), data.end(),var);
-	std::sregex_iterator end;
-	while (it != end)
-	{
-		std::string tmp = (*it)[0];
-		variables[tmp] = 0;
-		it++;
-	}
-	int cnt = 0;
-	for (auto& x : variables)
-	{
-		x.second = cnt;
-		cnt++;
-	}
-	std::vector<std::string> con;
-	std::string obj;
-	bool parsing_error = false;
-	size_t pos = 0;
-	std::string eq;
-	int slack_cnt = 0;
-	while ((pos = data.find(";")) != std::string::npos) {
-		eq = data.substr(0, pos);
-		if (eq.find(":") != std::string::npos)
-		{
-			if (obj.empty())
-			{
-				obj = eq;
-			}
-			else
-			{
-				parsing_error = true;
-			}
 		}
-		else
-		{
-			con.push_back(eq);
-			if (eq.find("<") != std::string::npos || eq.find(">") != std::string::npos)
-			{
-				slack_cnt++;
-			}
-		}		
-		data.erase(0, pos + 1);
+
 	}
 	int x = 0;
 }
