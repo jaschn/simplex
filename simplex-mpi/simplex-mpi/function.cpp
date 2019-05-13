@@ -11,6 +11,11 @@ function::function(std::vector<double> var, int slack_amount): variables(var),sl
 	}
 }
 
+function::function(std::string const& fun, int decision_cnt)
+{
+
+}
+
 
 function::~function()
 {

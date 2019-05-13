@@ -7,6 +7,10 @@ constraint::constraint(std::vector<double> var, int slack_amount, int slack_posi
 	slack.at(slack_position) = 1;
 }
 
+constraint::constraint(std::string const & eq, int decision_cnt, int slack_cnt, int slack_position)
+{
+}
+
 constraint::~constraint()
 {
 }
