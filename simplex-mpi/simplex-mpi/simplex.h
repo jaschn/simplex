@@ -15,7 +15,7 @@ public:
 	void parse_file(std::string filename);
 private:
 	std::vector<constraint> constraints;
-	function* objective;
+	function objective;
 	int variable_cnt;
 	int constraint_cnt;
 	bool max_function;

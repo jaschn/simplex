@@ -2,24 +2,27 @@
 #include "function.h"
 #include <algorithm>
 
-
-function::function(std::vector<double> var, int slack_amount): variables(var),slack(slack_amount)
+function::function()
 {
-	for (int i = 0; i < variables.size(); i++)
-	{
-		variables.at(i) = -variables.at(i);
-	}
 }
-
-function::function(std::string const& fun, int decision_cnt)
-{
-
-}
-
 
 function::~function()
 {
 
+}
+
+void function::set_function(std::string const & fun, int decision_cnt)
+{
+	int x;
+}
+
+void function::set_slack_cnt(int slack_amount)
+{
+	slack.clear();
+	for (size_t i = 0; i < slack_amount; i++)
+	{
+		slack.push_back(0);
+	}
 }
 
 void function::exchange(constraint const& pivot_row, int pivot_column)

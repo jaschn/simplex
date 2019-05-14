@@ -12,6 +12,6 @@
 int main()
 {    
 	simplex a;
-	a.parse_file("../../KI_2.txt");
+	a.parse_file("../../KI_5.txt");
 	a.solve();
 }

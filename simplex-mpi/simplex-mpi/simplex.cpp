@@ -7,20 +7,14 @@
 #include <regex>
 #include <map>
 
-simplex::simplex() //: objective({6,5},2)
+simplex::simplex()
 {
-	objective = NULL;
-	constraints.push_back(constraint({ 1,1 }, 2, 0, 5));
-	constraints.push_back(constraint({ 3,2 }, 2, 1, 12));
-	variable_cnt = 2;
-	constraint_cnt = constraints.size();
 }
 
 
 simplex::~simplex()
 {
-	if (objective == NULL)
-		delete objective;
+
 }
 
 std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
@@ -41,7 +35,7 @@ std::pair<int, int> simplex::get_pivot_element()
 	for (size_t i = 0; i < variable_cnt; i++)
 	{
 		auto max = get_max_increase_for_variable(i);
-		max.second *= -objective->variables.at(i);
+		max.second *= -objective.variables.at(i);
 		list.push_back(max);
 	}
 	std::pair<int, int> pivot_element;
@@ -62,7 +56,7 @@ std::pair<int, int> simplex::get_pivot_element()
 void simplex::exchange(std::pair<int,int> pivot)
 {
 	constraint const& pivot_row = constraints.at(pivot.second);
-	objective->exchange(pivot_row, pivot.first);
+	objective.exchange(pivot_row, pivot.first);
 	for (size_t i = 0; i < constraints.size(); i++)
 	{
 		if (i == pivot.second)
@@ -73,7 +67,7 @@ void simplex::exchange(std::pair<int,int> pivot)
 
 void simplex::solve()
 {
-	while (!objective->optimal_solution_reached())
+	while (!objective.optimal_solution_reached())
 	{
 		std::pair<int, int> pivot = get_pivot_element();
 		exchange(pivot);
@@ -83,7 +77,7 @@ void simplex::solve()
 	{
 		std::cout << x << " ";
 	}
-	std::cout << "= " << abs(objective->rs);
+	std::cout << "= " << abs(objective.rs);
 	std::cout << std::endl;
 }
 
@@ -115,13 +109,6 @@ void simplex::parse_file(std::string filename)
 
 	std::fstream file(filename, std::ios::in);
 	std::string tmp;
-	constraint_cnt = 0;
-	while (std::getline(file,tmp))
-	{
-		constraint_cnt += std::count(tmp.begin(), tmp.end(), ';');
-	}
-	constraint_cnt--;
-	file.seekg(0, file.beg);
 	while (std::getline(file,tmp))
 	{		
 		if (tmp.length() == 0)
@@ -131,17 +118,23 @@ void simplex::parse_file(std::string filename)
 		if (tmp.find("max:") != std::string::npos)
 		{
 			max_function = true;
-			if (objective == NULL)
-				objective = new function(tmp,decision_cnt);
+			objective.set_function(tmp,decision_cnt);
 			continue;
 		}
 		if (tmp.find("min:") != std::string::npos)
 		{
 			max_function = false;
-			if (objective == NULL)
-				objective = new function(tmp, decision_cnt);
+			objective.set_function(tmp,decision_cnt);
 			continue;
 		}
+		constraint tmp_const;
+		tmp_const.set_constraint(tmp, decision_cnt);
+		constraints.push_back(tmp_const);
+	}
+	constraint_cnt = constraints.size();
+	for (size_t i = 0; i < constraint_cnt; i++)
+	{
+		constraints.at(i).set_slack(constraint_cnt, i);
 	}
 	int x = 0;
 }

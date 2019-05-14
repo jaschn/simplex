@@ -2,17 +2,26 @@
 #include "constraint.h"
 #include <regex>
 
-constraint::constraint(std::vector<double> var, int slack_amount, int slack_position, double rs_value): variables(var), rs(rs_value), slack(slack_amount)
-{
-	slack.at(slack_position) = 1;
-}
-
-constraint::constraint(std::string const & eq, int decision_cnt, int slack_cnt, int slack_position)
+constraint::constraint()
 {
 }
 
 constraint::~constraint()
 {
+}
+
+void constraint::set_constraint(std::string const & eq, int decision_cnt)
+{
+}
+
+void constraint::set_slack(int slack_amount, int slack_position)
+{
+	slack.clear();
+	for (size_t i = 0; i < slack_amount; i++)
+	{
+		slack.push_back(0);
+	}
+	slack.at(slack_position) = 1;
 }
 
 double constraint::get_max_increase(int variable) const
