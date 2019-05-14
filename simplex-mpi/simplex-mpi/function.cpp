@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "function.h"
 #include <algorithm>
+#include <string>
 
 function::function()
 {
@@ -11,9 +12,28 @@ function::~function()
 
 }
 
-void function::set_function(std::string const & fun, int decision_cnt)
+void function::set_function(std::string fun, int decision_cnt)
 {
-	int x;
+	variables.reserve(decision_cnt);
+	fun.erase(0, 5);
+	while (variables.size() < decision_cnt)
+	{
+		bool is_negative;
+		if (fun.at(0) == '-')
+			is_negative = true;
+		else
+			is_negative = false;
+		fun.erase(0, 2);
+		size_t factor_len = fun.find_first_of('*');
+		double factor = std::stoi(fun.substr(0, factor_len));
+		if (is_negative)
+			factor = -factor;
+		variables.push_back(factor);
+		size_t next = fun.find_first_of(' ');
+		if (next == std::string::npos)
+			break;
+		fun.erase(0, next + 1);
+	}
 }
 
 void function::set_slack_cnt(int slack_amount)

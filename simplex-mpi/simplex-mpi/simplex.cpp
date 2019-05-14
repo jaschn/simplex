@@ -17,6 +17,11 @@ simplex::~simplex()
 
 }
 
+void simplex::transpose()
+{
+
+}
+
 std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
 {
 	std::vector<double> max_increase;
@@ -136,5 +141,4 @@ void simplex::parse_file(std::string filename)
 	{
 		constraints.at(i).set_slack(constraint_cnt, i);
 	}
-	int x = 0;
 }

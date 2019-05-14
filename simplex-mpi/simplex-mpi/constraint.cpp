@@ -10,8 +10,26 @@ constraint::~constraint()
 {
 }
 
-void constraint::set_constraint(std::string const & eq, int decision_cnt)
+void constraint::set_constraint(std::string eq, int decision_cnt)
 {
+	variables.reserve(decision_cnt);
+	eq.erase(0, 1);
+	while (variables.size()<decision_cnt)
+	{
+		bool is_negative;
+		if (eq.at(0) == '-')
+			is_negative = true;
+		else
+			is_negative = false;
+		eq.erase(0, 2);
+		size_t factor_len = eq.find_first_of('*');
+		double factor = std::stoi(eq.substr(0, factor_len));
+		if (is_negative)
+			factor = -factor;
+		variables.push_back(factor);
+		size_t next = eq.find_first_of(' ');
+		eq.erase(0, next + 1);
+	}
 }
 
 void constraint::set_slack(int slack_amount, int slack_position)
