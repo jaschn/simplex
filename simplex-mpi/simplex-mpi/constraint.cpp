@@ -52,7 +52,7 @@ double constraint::get_max_increase(int variable) const
 
 void constraint::exchange(constraint const& pivot_row, int pivot_column)
 {
-	double factor = variables.at(pivot_column);
+	double factor = variables.at(pivot_column)/pivot_row.variables.at(pivot_column);
 	rs -= factor*pivot_row.rs;
 	for (size_t i = 0; i < variables.size(); i++)
 	{

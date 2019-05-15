@@ -47,7 +47,7 @@ void function::set_slack_cnt(int slack_amount)
 
 void function::exchange(constraint const& pivot_row, int pivot_column)
 {
-	double factor = variables.at(pivot_column);
+	double factor = variables.at(pivot_column)/pivot_row.variables.at(pivot_column);
 	rs -= factor * pivot_row.rs;
 	for (size_t i = 0; i < variables.size(); i++)
 	{
