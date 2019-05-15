@@ -68,3 +68,11 @@ bool function::optimal_solution_reached()
 	}
 	return true;
 }
+
+void function::set_negative()
+{
+	for (auto & x : variables)
+	{
+		x = -x;
+	}
+}

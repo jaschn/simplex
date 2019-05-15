@@ -10,6 +10,7 @@ public:
 	void set_slack_cnt(int slack_amount);
 	void exchange(constraint const& pivot_row, int pivot_column);
 	bool optimal_solution_reached();
+	void set_negative();
 	std::vector<double> variables;
 	std::vector<double> slack;
 	double rs;

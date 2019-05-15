@@ -30,6 +30,9 @@ void constraint::set_constraint(std::string eq, int decision_cnt)
 		size_t next = eq.find_first_of(' ');
 		eq.erase(0, next + 1);
 	}
+	size_t next = eq.find_first_of(' ');
+	size_t end = eq.find_first_of(';');
+	rs = std::stoi(eq.substr(next+1, end));
 }
 
 void constraint::set_slack(int slack_amount, int slack_position)

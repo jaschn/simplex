@@ -19,7 +19,26 @@ simplex::~simplex()
 
 void simplex::transpose()
 {
-
+	std::vector<constraint> transposed_con;
+	function transposed_obj;
+	transposed_con.reserve(variable_cnt);
+	for (size_t i = 0; i < variable_cnt; i++)
+	{
+		constraint tmp;
+		tmp.variables.reserve(constraint_cnt);
+		for (auto const& x : constraints)
+		{
+			tmp.variables.push_back(x.variables.at(i));
+		}
+		tmp.rs = objective.variables.at(i);
+		transposed_con.push_back(tmp);
+	}
+	for (auto const& x : constraints)
+	{
+		transposed_obj.variables.push_back(x.rs);
+	}
+	constraints = transposed_con;
+	objective = transposed_obj;
 }
 
 std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
@@ -110,7 +129,7 @@ void simplex::parse_file(std::string filename)
 		pos_beg = filename.find_last_of("\\KI_");
 	}
 	size_t pos_end = filename.find_last_of(".txt");
-	int decision_cnt = std::stoi(filename.substr(pos_beg+1,pos_end-pos_beg-4));
+	variable_cnt = std::stoi(filename.substr(pos_beg+1,pos_end-pos_beg-4));
 
 	std::fstream file(filename, std::ios::in);
 	std::string tmp;
@@ -123,22 +142,27 @@ void simplex::parse_file(std::string filename)
 		if (tmp.find("max:") != std::string::npos)
 		{
 			max_function = true;
-			objective.set_function(tmp,decision_cnt);
+			objective.set_function(tmp,variable_cnt);
 			continue;
 		}
 		if (tmp.find("min:") != std::string::npos)
 		{
 			max_function = false;
-			objective.set_function(tmp,decision_cnt);
+			objective.set_function(tmp,variable_cnt);
 			continue;
 		}
 		constraint tmp_const;
-		tmp_const.set_constraint(tmp, decision_cnt);
+		tmp_const.set_constraint(tmp, variable_cnt);
 		constraints.push_back(tmp_const);
 	}
+	if (!max_function)
+		transpose();
 	constraint_cnt = constraints.size();
+	variable_cnt = constraints.at(0).variables.size();
+	objective.set_slack_cnt(constraint_cnt);
 	for (size_t i = 0; i < constraint_cnt; i++)
 	{
 		constraints.at(i).set_slack(constraint_cnt, i);
 	}
+	objective.set_negative();
 }
