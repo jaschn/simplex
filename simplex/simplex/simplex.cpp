@@ -79,9 +79,8 @@ std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
 std::pair<int, int> simplex::get_pivot_element()
 {
 	std::pair<int, int> pivot;
-	double min_value = objective.variables.at(0);
-	pivot.first = 0;
-	for (size_t i = 1; i < variable_cnt; i++)
+	double min_value = DBL_MAX;
+	for (size_t i = 0; i < variable_cnt; i++)
 	{
 		if (objective.variables.at(i) < min_value)
 		{
