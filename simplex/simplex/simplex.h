@@ -12,7 +12,7 @@ public:
 	std::pair<int, int> get_pivot_element();
 	void exchange(std::pair<int,int> pivot);
 	void solve();
-	std::vector<double> get_results();
+	double get_results();
 	void parse_file(std::string filename);
 private:
 	std::vector<constraint> constraints;

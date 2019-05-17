@@ -47,12 +47,14 @@ void constraint::set_slack(int slack_amount, int slack_position)
 
 double constraint::get_max_increase(int variable) const
 {
+	if (variables.at(variable) == 0)
+		return 0;
 	return rs/variables.at(variable);
 }
 
 void constraint::exchange(constraint const& pivot_row, int pivot_column)
 {
-	double factor = variables.at(pivot_column)/pivot_row.variables.at(pivot_column);
+	double factor = variables.at(pivot_column);
 	rs -= factor*pivot_row.rs;
 	for (size_t i = 0; i < variables.size(); i++)
 	{
@@ -61,5 +63,19 @@ void constraint::exchange(constraint const& pivot_row, int pivot_column)
 	for (size_t i = 0; i < slack.size(); i++)
 	{
 		slack.at(i) -= factor * pivot_row.slack.at(i);
+	}
+}
+
+void constraint::reduce(int variable_pos)
+{
+	double factor = variables.at(variable_pos);
+	rs /= factor;
+	for (auto & x : variables)
+	{
+		x /= factor;
+	}
+	for (auto & x : slack)
+	{
+		x /= factor;
 	}
 }
