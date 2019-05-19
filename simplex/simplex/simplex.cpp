@@ -39,17 +39,17 @@ void simplex::transpose()
 	objective = transposed_obj;
 }
 
-std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
-{
-	std::vector<double> max_increase;
-	max_increase.reserve(constraint_cnt);
-	for (auto const& v : constraints)
-	{
-		max_increase.push_back(v.get_max_increase(variable));
-	}
-	auto x = std::min_element(max_increase.begin(), max_increase.end());
-	return std::pair<int, double>(x - max_increase.begin(), *x);
-}
+//std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
+//{
+//	std::vector<double> max_increase;
+//	max_increase.reserve(constraint_cnt);
+//	for (auto const& v : constraints)
+//	{
+//		max_increase.push_back(v.get_max_increase(variable));
+//	}
+//	auto x = std::min_element(max_increase.begin(), max_increase.end());
+//	return std::pair<int, double>(x - max_increase.begin(), *x);
+//}
 
 //std::pair<int, int> simplex::get_pivot_element()
 //{
@@ -80,6 +80,7 @@ std::pair<int, int> simplex::get_pivot_element()
 {
 	std::pair<int, int> pivot;
 	double min_value = DBL_MAX;
+	pivot.first = 0;
 	for (size_t i = 0; i < variable_cnt; i++)
 	{
 		if (objective.variables.at(i) < min_value)
@@ -89,10 +90,9 @@ std::pair<int, int> simplex::get_pivot_element()
 		}
 	}
 	double max_increase = DBL_MAX;
+	pivot.second = 0;
 	for (size_t i = 0; i < constraint_cnt; i++)
 	{
-		if (constraints.at(i).variables.at(pivot.first) == 0)
-			continue;
 		double max_inc_con = constraints.at(i).rs / constraints.at(i).variables.at(pivot.first);
 		if (max_inc_con > 0 && max_inc_con < max_increase)
 		{
@@ -105,7 +105,8 @@ std::pair<int, int> simplex::get_pivot_element()
 
 void simplex::exchange(std::pair<int,int> pivot)
 {
-	constraint const& pivot_row = constraints.at(pivot.second);
+	constraint& pivot_row = constraints.at(pivot.second);
+	pivot_row.reduce(pivot.first);
 	objective.exchange(pivot_row, pivot.first);
 	for (size_t i = 0; i < constraints.size(); i++)
 	{
@@ -120,7 +121,6 @@ void simplex::solve()
 	while (!objective.optimal_solution_reached())
 	{
 		std::pair<int, int> pivot = get_pivot_element();
-		constraints.at(pivot.second).reduce(pivot.first);
 		exchange(pivot);
 	}
 }
