@@ -47,7 +47,11 @@ void function::set_slack_cnt(int slack_amount)
 
 void function::exchange(constraint const& pivot_row, int pivot_column)
 {
-	double factor = variables.at(pivot_column);
+	double factor = 0;
+	if (pivot_column < variables.size())
+		factor = variables.at(pivot_column);
+	else
+		factor = slack.at(pivot_column - variables.size());
 	rs -= factor * pivot_row.rs;
 	for (size_t i = 0; i < variables.size(); i++)
 	{
@@ -62,6 +66,11 @@ void function::exchange(constraint const& pivot_row, int pivot_column)
 bool function::optimal_solution_reached()
 {
 	for (auto const& x : variables)
+	{
+		if (x < 0)
+			return false;
+	}
+	for (auto const& x : slack)
 	{
 		if (x < 0)
 			return false;

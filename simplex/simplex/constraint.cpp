@@ -54,7 +54,11 @@ double constraint::get_max_increase(int variable) const
 
 void constraint::exchange(constraint const& pivot_row, int pivot_column)
 {
-	double factor = variables.at(pivot_column);
+	double factor = 0;
+	if (pivot_column < variables.size())
+		factor = variables.at(pivot_column);
+	else
+		factor = slack.at(pivot_column - variables.size());
 	rs -= factor*pivot_row.rs;
 	for (size_t i = 0; i < variables.size(); i++)
 	{
@@ -68,7 +72,11 @@ void constraint::exchange(constraint const& pivot_row, int pivot_column)
 
 void constraint::reduce(int variable_pos)
 {
-	double factor = variables.at(variable_pos);
+	double factor = 0;
+	if (variable_pos < variables.size())
+		factor = variables.at(variable_pos);
+	else
+		factor = slack.at(variable_pos - variables.size());		
 	rs /= factor;
 	for (auto & x : variables)
 	{

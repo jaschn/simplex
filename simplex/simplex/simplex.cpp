@@ -39,43 +39,6 @@ void simplex::transpose()
 	objective = transposed_obj;
 }
 
-//std::pair<int,double> simplex::get_max_increase_for_variable(int variable)
-//{
-//	std::vector<double> max_increase;
-//	max_increase.reserve(constraint_cnt);
-//	for (auto const& v : constraints)
-//	{
-//		max_increase.push_back(v.get_max_increase(variable));
-//	}
-//	auto x = std::min_element(max_increase.begin(), max_increase.end());
-//	return std::pair<int, double>(x - max_increase.begin(), *x);
-//}
-
-//std::pair<int, int> simplex::get_pivot_element()
-//{
-//	std::vector<std::pair<int, double>> list;
-//	for (size_t i = 0; i < variable_cnt; i++)
-//	{
-//		auto max = get_max_increase_for_variable(i);
-//		max.second *= -objective.variables.at(i);
-//		list.push_back(max);
-//	}
-//	std::pair<int, int> pivot_element;
-//	pivot_element.first = 0;
-//	pivot_element.second = list.at(0).first;
-//	double max_value = list.at(0).second;
-//	for (size_t i = 1; i < list.size(); i++)
-//	{
-//		if (list.at(i).second > max_value)
-//		{
-//			pivot_element.first = i;
-//			pivot_element.second = list.at(i).first;
-//			max_value = list.at(i).second;
-//		}
-//	}
-//	return pivot_element;
-//}
-
 std::pair<int, int> simplex::get_pivot_element()
 {
 	std::pair<int, int> pivot;
@@ -89,11 +52,24 @@ std::pair<int, int> simplex::get_pivot_element()
 			pivot.first = i;
 		}
 	}
+	for (size_t i = 0; i < constraint_cnt; i++)
+	{
+		if (objective.slack.at(i) < min_value)
+		{
+			min_value = objective.slack.at(i);
+			pivot.first = i + variable_cnt;
+		}
+	}
 	double max_increase = DBL_MAX;
 	pivot.second = 0;
 	for (size_t i = 0; i < constraint_cnt; i++)
 	{
-		double max_inc_con = constraints.at(i).rs / constraints.at(i).variables.at(pivot.first);
+		double divider = 0;
+		if (pivot.first >= variable_cnt)
+			divider = constraints.at(i).slack.at(pivot.first - variable_cnt);
+		else
+			divider = constraints.at(i).variables.at(pivot.first);
+		double max_inc_con = constraints.at(i).rs / divider;
 		if (max_inc_con > 0 && max_inc_con < max_increase)
 		{
 			max_increase = max_inc_con;
