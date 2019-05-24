@@ -103,7 +103,7 @@ namespace UnitTest
 			Assert::AreEqual(round(261.768774703557), round(a_res));
 		}
 
-		double tolerance = 0.000000000001;
+		double tolerance = 0.0000000000009;
 
 		TEST_METHOD(KI_5_tolerance)
 		{
