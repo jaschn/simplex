@@ -101,7 +101,7 @@ void simplex::solve()
 	}
 }
 
-double simplex::get_results()
+double simplex::get_result()
 {
 	return objective.rs;
 }
@@ -150,4 +150,27 @@ void simplex::parse_file(std::string filename)
 		constraints.at(i).set_slack(constraint_cnt, i);
 	}
 	objective.set_negative();
+}
+
+std::vector<double> simplex::get_result_values()
+{
+	std::vector<double> result(variable_cnt);
+	if (max_function)
+	{
+		for (auto & x : constraints)
+		{
+			for (int i = 0; i < x.variables.size(); i++)
+			{
+				if (x.variables.at(i) == 1)
+				{
+					result.at(i) = x.rs;
+				}
+			}
+		}
+	}
+	else
+	{
+		result = objective.slack;
+	}
+	return result;
 }

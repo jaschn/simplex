@@ -12,5 +12,14 @@ int main(int argc, char *argv[])
 	simplex a;
 	a.parse_file(argv[1]);
 	a.solve();
-	double a_res = a.get_results();
+	auto results = a.get_result_values();
+	double res = a.get_result();
+	std::cout << "result:" << std::endl;	
+	for (int i = 0; i < results.size(); i++)
+	{
+		std::cout << "x_" << i << ": " << results.at(i) << std::endl;
+	}
+	std::cout << "result value: " << res << std::endl;
+	int tmp;
+	std::cin >> tmp;
 }
