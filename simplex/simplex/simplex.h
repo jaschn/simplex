@@ -12,7 +12,7 @@ public:
 	void exchange(std::pair<int,int> pivot);
 	void solve();
 	double get_result();
-	void parse_file(std::string filename);
+	bool parse_file(std::string filename);
 	std::vector<double> get_result_values();
 	
 private:

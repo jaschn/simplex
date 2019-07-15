@@ -106,7 +106,7 @@ double simplex::get_result()
 	return objective.rs;
 }
 
-void simplex::parse_file(std::string filename)
+bool simplex::parse_file(std::string filename)
 {
 	size_t pos_beg = filename.find_last_of("/KI_");
 	if (pos_beg == std::string::npos)
@@ -117,6 +117,11 @@ void simplex::parse_file(std::string filename)
 	variable_cnt = std::stoi(filename.substr(pos_beg+1,pos_end-pos_beg-4));
 
 	std::fstream file(filename, std::ios::in);
+	if (!file.is_open())
+	{
+		std::cout << "can't open file" << std::endl << std::endl;
+		return false;
+	}
 	std::string tmp;
 	while (std::getline(file,tmp))
 	{		
@@ -145,11 +150,12 @@ void simplex::parse_file(std::string filename)
 	constraint_cnt = constraints.size();
 	variable_cnt = constraints.at(0).variables.size();
 	objective.set_slack_cnt(constraint_cnt);
-	for (size_t i = 0; i < constraint_cnt; i++)
+	for (int i = 0; i < constraint_cnt; i++)
 	{
 		constraints.at(i).set_slack(constraint_cnt, i);
 	}
 	objective.set_negative();
+	return true;
 }
 
 std::vector<double> simplex::get_result_values()

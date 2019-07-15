@@ -38,6 +38,7 @@ void constraint::set_constraint(std::string eq, int decision_cnt)
 void constraint::set_slack(int slack_amount, int slack_position)
 {
 	slack.clear();
+	slack.reserve(slack_amount);
 	for (size_t i = 0; i < slack_amount; i++)
 	{
 		slack.push_back(0);

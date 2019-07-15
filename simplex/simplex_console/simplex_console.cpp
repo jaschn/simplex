@@ -10,16 +10,18 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 		return -1;
 	simplex a;
-	a.parse_file(argv[1]);
-	a.solve();
-	auto results = a.get_result_values();
-	double res = a.get_result();
-	std::cout << "result:" << std::endl;	
-	for (int i = 0; i < results.size(); i++)
+	if (a.parse_file(argv[1]))
 	{
-		std::cout << "x_" << i << ": " << results.at(i) << std::endl;
+		a.solve();
+		auto results = a.get_result_values();
+		double res = a.get_result();
+		std::cout << "result:" << std::endl;	
+		for (int i = 0; i < results.size(); i++)
+		{
+			std::cout << "x_" << i << ": " << results.at(i) << std::endl;
+		}
+		std::cout << "result value: " << res << std::endl;
 	}
-	std::cout << "result value: " << res << std::endl;
 	int tmp;
 	std::cin >> tmp;
 }
